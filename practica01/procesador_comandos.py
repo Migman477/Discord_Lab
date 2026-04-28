@@ -32,6 +32,7 @@ def calcular_uptime(hora_inicio):
 
   
 def mostrar_ayuda():
+    
 
 def iniciar_agente():
 
