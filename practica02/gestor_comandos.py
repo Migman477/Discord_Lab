@@ -1,19 +1,38 @@
+import datetime
 
-
-def analiar_comand0(entrada_usuario):
+def analizar_comando(entrada_usuario):
     """
-    Analiza el comando ingresado por el usuario y devuelve el comando y su argumento
+    Segunda fase del agente: Procesamiento de comandos y lógica dinamica.
+    Aquí el alumno aprende a separar la 'accion' de los 'datos'.
     """
+    mensaje = entrada_usuario.lower().strip()
+    
+    # Simulacion de comandos prefijados
+    if mensaje.startswith("!recordar"):
+        partes = mensaje.split(" ", 1)
+        comando = partes[0]
+        argumento = partes[1] if len(partes) > 1 else ""
+        
+        # Logica de comando
+        if comando == "!definir":
+            return buscar_en_diccionario(argumento)
+        elif comando == "!validar":
+            return validar_variable(argumento)
+        elif comando == "!hora":
+            ahora = datetime.datetime.now().strftime("%H:%M:%S")
+            return f"La hora actual del servidro es: {ahora}"
+        elif comando == "!ayuda":
+            return (" **Comandos disponibles:**\n"
+                    "1. !definir [termino] - Busca la definición de una palabra.\n"
+                    "2. !validar [nombre] - Valida el valor de una variable.\n"
+                    "3. !hora - Muestra la hora actual del servidor.\n")
 
-    if not entrada_usuario.startswith("!"):
-        return None, None
 
-    partes = entrada_usuario[1:].split(maxsplit=1)
-    comando = partes[0].lower()
-    argumento = partes[1] if len(partes) > 1 else ""
-    return comando, argumento
+def buscar_en_diccionario(argumento):
 
-def buscar_en_diccionario(termino):
+
+    if not argumento:
+        return "Por favor, proporciona un término para definir."
 
     conocimiento = {
 
@@ -58,26 +77,30 @@ def buscar_en_diccionario(termino):
         "indentacion": "Espacios al inicio de una línea de código que definen la jerarquía y pertenencia a bloques de control en Python."
         
     }
-    
-    if termino.lower() in conocimiento:
-        return conocimiento[termino.lower()]
-    else:
-        return "Lo siento, no tengo información sobre ese término."
-    
+    return conocimiento.get(argumento, "Lo siento, no tengo información sobre ese término.")
+
 
 def validar_variable(nombre):
-   
-   """
-   Valida si una variable comple con los estandares de la programacion estructurada
-   """ 
 
-   if not nombre:
-         return "Error: El nombre de la variable no puede estar vacío."
-   if not nombre[0].isalpha() and nombre[0] != "_":
-         return "Error: El nombre de la variable debe comenzar con una letra o un guion bajo."
-   if not all(c.isalnum() or c == "_" for c in nombre):
-         return "Error: El nombre de la variable solo puede contener letras, números y guiones bajos."
-   if  " " in nombre:
-         return "Error: El nombre de la variable no puede contener espacios."
-   
-   return f"El nombre de la variable '{nombre}' es válido."
+    if not nombre:
+        return "Por favor, proporciona un nombre de variable para validar. Eh: !validar mi_variable"
+    
+    if nombre [0].isdigit():
+        return "El nombre de la variable no puede comenzar con un número."
+    
+    if " " in nombre:
+        return "El nombre de la variable no puede contener espacios."
+    
+    if not nombre.isidentifier():
+        return "El nombre de la variable contiene caracteres no válidos."
+    
+    return f"La variable '{nombre}' es válida."
+
+def main():
+    print("Bienvenido al gestor de comandos. Escribe '!ayuda' para ver los comandos disponibles.")
+    entrada =input(f"BOT> : ").strip()
+    analizar_comando(entrada)
+
+if __name__ == "__main__":
+    main()
+
