@@ -2,6 +2,9 @@ import discord
 import os
 import re
 from dotenv import load_dotenv
+import datetime
+
+
 
 def mostrar_bienvenida():
     """Retorna la lista de comandos disponibles."""
@@ -11,6 +14,59 @@ def mostrar_bienvenida():
         "📜 Primeros pasos Agente Discord UX:\n"
         "📜 Esccriba !Exit para salir del Agente:"
     )
+
+historial_comandos = []
+
+def ejecutar_suma(argumento):
+    """
+    Procesa la suma de dos números recibidos como texto.
+    Demuestra la Unidad 2.2.3 (Tipos de datos simples).
+    """
+    try:
+        nums = argumento.split(" ")
+        n1 = float(nums[0])
+        n2 = float(nums[1])
+        return f"La suma de {n1} + {n2} es: {n1 + n2}"
+    except:
+        return "Uso correcto: '!sumar 10 5'"
+
+def buscar_en_diccionario(termino):
+    if not termino: return " ¿Qué término buscas?"
+    
+    conocimiento = {
+        "variable": "Espacio en memoria para datos.",
+        "lista": "Arreglo dinámico de elementos.",
+        "tupla": "Arreglo inmutable."
+    }
+
+    return conocimiento.get(termino, f" No encontré '{termino}'.")
+
+def validar_variable(nombre):
+    if not nombre: return "Indica el nombre."
+    if nombre[0].isdigit(): return "No puede empezar con número."
+    if not nombre.isidentifier(): return "Caracteres no permitidos."
+    return f"{nombre} es válido."
+
+
+def ejecutar_multiplicacion(argumento):
+    """
+    Procesa la multiplicación de dos números recibidos como texto.
+    """
+    try:
+        nums = argumento.split(" ")
+        n1 = float(nums[0])
+        n2 = float(nums[1])
+        return f"La multiplicación de {n1} x {n2} es: {n1 * n2}"
+    except:
+        return "Uso correcto: '!multiplicar 10 5'"
+
+# --- FUNCIÓN EXTRA: Fecha y hora completa ---
+def obtener_fecha_completa():
+    """
+    Devuelve la fecha y hora actual en formato completo.
+    """
+    ahora = datetime.datetime.now()
+    return ahora.strftime("%A, %d de %B de %Y, %H:%M:%S")
 
 def main(entrada):
     
@@ -32,6 +88,7 @@ def main(entrada):
         elif comando == "inicio":
             print(mostrar_bienvenida())
             return mostrar_bienvenida()
+
             
             
         else:
@@ -40,7 +97,59 @@ def main(entrada):
         
         print("-" * 20)
 
+def comandos(entrada):
+    
+        PREFIJO = "!"
+        
+        if not entrada.startswith(PREFIJO):
+            if entrada: print("Recuerda usar '!' para comandos.")
+            
+        # Procesamiento de la entrada
+        cuerpo = entrada[len(PREFIJO):].split(maxsplit=1)
+        comando = cuerpo[0].lower()
+        argumento = cuerpo[1] if len(cuerpo) > 1 else ""
 
+        if comando == "ayuda":
+            return (" Comandos disponibles:\n"
+                    "1. '!inicio' - Muestra la bienvenida.\n"
+                    "2. '!ayuda' - Muestra esta ayuda.\n"
+                    "3. '!exit' - Sale del agente.\n"
+                    "4. '!definir <termino>' - Busca conceptos de Python.\n"
+                    "5. '!validar <nombre>' - Revisa si un nombre de variable es válido.\n"
+                    "6. '!hora' - Muestra la hora del sistema.\n"
+                    "7. '!fecha' - Muestra la fecha y hora completa.\n"
+                    "8. '!historial' - Muestra los últimos comandos ejecutados.\n"
+                    "9. '!sumar <n1> <n2>' - Suma dos números.\n"
+                    "10. '!multiplicar <n1> <n2>' - Multiplica dos números.")
+        elif comando == "!hora":
+            ahora = datetime.datetime.now().strftime("%H:%M:%S")
+            return f" La hora actual del servidor es: {ahora}"
+        elif comando == "!definir":
+            return buscar_en_diccionario(argumento)
+        
+        elif comando == "!validar":
+            return validar_variable(argumento)
+            
+        elif comando == "!hora":
+            ahora = datetime.datetime.now().strftime("%H:%M:%S")
+            return f" Hora actual: {ahora}"
+        
+        elif comando == "!historial":
+            # UNIDAD 3.2: Estructuras de repetición
+            res = "Últimos comandos:\n"
+            for i, cmd in enumerate(historial_comandos, 1):
+                res += f"{i}. {cmd}\n"
+            return res
+
+        elif comando == "!sumar":
+            # UNIDAD 4.3: Parámetros de entrada
+            return ejecutar_suma(argumento)
+        
+        elif comando == "!fecha":
+            return obtener_fecha_completa()
+        
+        elif comando == "!multiplicar":
+            return ejecutar_multiplicacion(argumento)
 # --- CONFIGURACIÓN DE DISCORD ---
 
 load_dotenv()
@@ -75,82 +184,7 @@ async def on_message(message):
         # 4. Respuesta: El bot escribe el resultado en el mismo canal
         await message.channel.send(f" **Bot Procesador:** {resultado}")
 
-import datetime
-
-def analizar_comando(entrada_usuario):
-    """
-    Segunda fase del Agente: Procesamiento de comandos y lógica dinámica.    
-    """
-    mensaje = entrada_usuario.lower().strip()
     
-    # Simulación de comandos prefijados (como se usan en Discord: !ayuda, !ejemplo)
-    if mensaje.startswith("!"):
-        partes = mensaje.split(" ", 1)
-        comando = partes[0]
-        argumento = partes[1] if len(partes) > 1 else None
-        
-        # Lógica de Comandos
-        if comando == "!definir":
-            return buscar_en_diccionario(argumento)
-        
-        elif comando == "!validar":
-            return validar_variable(argumento)
-            
-        elif comando == "!hora":
-            ahora = datetime.datetime.now().strftime("%H:%M:%S")
-            return f" La hora actual del servidor es: {ahora}"
-            
-        elif comando == "!ayuda":
-            return (" Comandos disponibles:\n"
-                    "1. '!definir <termino>' - Busca conceptos de Python.\n"
-                    "2. '!validar <nombre>' - Revisa si un nombre de variable es válido.\n"
-                    "3. '!hora' - Muestra la hora del sistema.")
-        
-        else:
-            return f" El comando '{comando}' no existe. Usa '!ayuda'."
-            
-    return " Recuerda usar el prefijo '!' para darme órdenes, o pregunta algo directamente."
-
-def buscar_en_diccionario(termino):
-    if not termino:
-        return "Debes escribir qué término quieres definir. Ej: '!definir list'"
-    
-    # Base de datos simplificada (puedes reutilizar la de la práctica anterior)
-    conocimiento = {
-        "variable": "Un espacio en memoria para almacenar datos.",
-        "lista": "Colección mutable de elementos.",
-        "tupla": "Colección inmutable de elementos (no se puede cambiar)."
-    }
-    return conocimiento.get(termino, f" No encontré '{termino}' en mi base de datos.")
-
-def validar_variable(nombre):
-    """
-    Lógica pedagógica: Enseña a los alumnos las reglas de nombrado en Python.
-    """
-    if not nombre:
-        return " Indica el nombre a validar. Ej: `!validar mi_variable`"
-    
-    # Reglas básicas de Python
-    if nombre[0].isdigit():
-        return f" '{nombre}' no es válido: ¡No puede empezar con un número!"
-    if " " in nombre:
-        return f" '{nombre}' no es válido: No puede contener espacios."
-    if not nombre.isidentifier():
-        return f" '{nombre}' contiene caracteres no permitidos (solo letras, números y _)."
-        
-    return f" '{nombre}' es un nombre de variable válido en Python."
-
-# --- Simulación de ejecución ---
-if __name__ == "__main__":
-    print("--- Agente de Lógica: Fase de Comandos ---")
-    print("Prueba comandos como: !validar 123hola o !definir lista\n")
-    
-    while True:
-        user_input = input("Alumno >> ")
-        if user_input.lower() in ["salir", "exit"]: break
-        
-        respuesta = analizar_comando(user_input)
-        print(f"Bot >> {respuesta}\n")
     
 # Ejecutar el bot
 if __name__ == "__main__":
