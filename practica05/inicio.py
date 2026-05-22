@@ -15,7 +15,10 @@ def mostrar_bienvenida():
         "📜 Esccriba !Exit para salir del Agente:"
     )
 
-historial_comandos = []
+def historial_comandos ():
+    historial_comandos = []
+    return historial_comandos
+
 
 def ejecutar_suma(argumento):
     """
@@ -34,12 +37,50 @@ def buscar_en_diccionario(termino):
     if not termino: return " ¿Qué término buscas?"
     
     conocimiento = {
-        "variable": "Espacio en memoria para datos.",
-        "lista": "Arreglo dinámico de elementos.",
-        "tupla": "Arreglo inmutable."
+
+        #CONCEPTOS DE ESTRUCTURA DE CONTROL
+        "if": "Estructura de control que permite ejecutar un bloque de código si se cumple una condición.",
+        "else": "Estructura de control que permite ejecutar un bloque de código si no se cumple una condición.",
+        "elif": "Estructura de control que permite ejecutar un bloque de código si se cumple una condición adicional después de un if.",
+        "for": "Estructura de control que permite ejecutar un bloque de código un número determinado de veces.",
+        "while": "Estructura de control que permite ejecutar un bloque de código mientras se cumpla una condición.",
+        "break": "Instrucción que permite salir de un bucle antes de que se cumpla la condición de finalización.",
+        "continue": "Instrucción que permite saltar a la siguiente iteración de un bucle sin ejecutar el código restante en la iteración actual.",
+        
+        #CONCEPTOS DE FUNCIONES
+        "def": "Palabra clave que se utiliza para definir una función en Python.",
+        "return": "Palabra clave que se utiliza para devolver un valor desde una función.",
+        "import": "Palabra clave que se utiliza para importar módulos en Python.",
+        "class": "Palabra clave que se utiliza para definir una clase en Python.", 
+
+        #Tipos de datos
+        "int": "Tipo de dato que representa números enteros.",
+        "float": "Tipo de dato que representa números con decimales.",
+        "str": "Tipo de dato que representa cadenas de caracteres.",
+        "bool": "Tipo de dato que representa valores booleanos (verdadero o falso).",
+        "list": "Tipo de dato que representa una lista de valores.",
+        "tuple": "Tipo de dato que representa una tupla de valores.",
+        "dict": "Tipo de dato que representa un diccionario de valores.",
+        "set": "Tipo de dato que representa un conjunto de valores.",
+
+        #Operadores de sintaxis
+        "print": "Función que se utiliza para mostrar información en la consola.",
+        "input": "Función que se utiliza para recibir información del usuario a través de la consola.",
+        "len": "Función que se utiliza para obtener la longitud de un objeto.",
+        "type": "Función que se utiliza para obtener el tipo de un objeto.",
+        "range": "Función que se utiliza para generar una secuencia de números.",
+
+        #Conceptos de programacion estruturada
+        "programacion estructurada": "Paradigma de programación que se basa en la división de un programa en bloques de código que realizan tareas específicas, utilizando estructuras de control y funciones para organizar el código de manera clara y eficiente."
+        ,
+        "variable": "Espacio en memoria reservado para almacenar un valor que puede cambiar durante la ejecución del programa.",
+        "operadores": "Símbolos que permiten realizar operaciones matemáticas, lógicas o de comparación entre valores.",
+        "comentario": "Texto en el código que no se ejecuta y sirve para explicar el funcionamiento del programa.",
+        "indentacion": "Espacios al inicio de una línea de código que definen la jerarquía y pertenencia a bloques de control en Python."
+        
     }
 
-    return conocimiento.get(termino, f" No encontré '{termino}'.")
+    return conocimiento.get(termino.lower(), f"El término '{termino}' no se encuentra en el diccionario.")
 
 def validar_variable(nombre):
     if not nombre: return "Indica el nombre."
@@ -88,7 +129,49 @@ def main(entrada):
         elif comando == "inicio":
             print(mostrar_bienvenida())
             return mostrar_bienvenida()
+        
+        if comando == "ayuda":
+            return (" Comandos disponibles:\n"
+                    "1. '!inicio' - Muestra la bienvenida.\n"
+                    "2. '!ayuda' - Muestra esta ayuda.\n"
+                    "3. '!exit' - Sale del agente.\n"
+                    "4. '!definir <termino>' - Busca conceptos de Python.\n"
+                    "5. '!validar <nombre>' - Revisa si un nombre de variable es válido.\n"
+                    "6. '!hora' - Muestra la hora del sistema.\n"
+                    "7. '!fecha' - Muestra la fecha y hora completa.\n"
+                    "8. '!historial' - Muestra los últimos comandos ejecutados.\n"
+                    "9. '!sumar <n1> <n2>' - Suma dos números.\n"
+                    "10. '!multiplicar <n1> <n2>' - Multiplica dos números.")
+        
+        elif comando == "hora":
+            ahora = datetime.datetime.now().strftime("%H:%M:%S")
+            return f" La hora actual del servidor es: {ahora}"
+        elif comando == "definir":
+            return buscar_en_diccionario(argumento)
+        
+        elif comando == "validar":
+            return validar_variable(argumento)
+            
+        elif comando == "hora":
+            ahora = datetime.datetime.now().strftime("%H:%M:%S")
+            return f" Hora actual: {ahora}"
+        
+        elif comando == "historial":
+            # UNIDAD 3.2: Estructuras de repetición
+            res = "Últimos comandos:\n"
+            for i, cmd in enumerate(historial_comandos, 1):
+                res += f"{i}. {cmd}\n"
+            return res
 
+        elif comando == "sumar":
+            # UNIDAD 4.3: Parámetros de entrada
+            return ejecutar_suma(argumento)
+        
+        elif comando == "fecha":
+            return obtener_fecha_completa()
+        
+        elif comando == "multiplicar":
+            return ejecutar_multiplicacion(argumento)
             
             
         else:
@@ -121,34 +204,34 @@ def comandos(entrada):
                     "8. '!historial' - Muestra los últimos comandos ejecutados.\n"
                     "9. '!sumar <n1> <n2>' - Suma dos números.\n"
                     "10. '!multiplicar <n1> <n2>' - Multiplica dos números.")
-        elif comando == "!hora":
+        elif comando == "hora":
             ahora = datetime.datetime.now().strftime("%H:%M:%S")
             return f" La hora actual del servidor es: {ahora}"
-        elif comando == "!definir":
+        elif comando == "definir":
             return buscar_en_diccionario(argumento)
         
-        elif comando == "!validar":
+        elif comando == "validar":
             return validar_variable(argumento)
             
-        elif comando == "!hora":
+        elif comando == "hora":
             ahora = datetime.datetime.now().strftime("%H:%M:%S")
             return f" Hora actual: {ahora}"
         
-        elif comando == "!historial":
+        elif comando == "historial":
             # UNIDAD 3.2: Estructuras de repetición
             res = "Últimos comandos:\n"
             for i, cmd in enumerate(historial_comandos, 1):
                 res += f"{i}. {cmd}\n"
             return res
 
-        elif comando == "!sumar":
+        elif comando == "sumar":
             # UNIDAD 4.3: Parámetros de entrada
             return ejecutar_suma(argumento)
         
-        elif comando == "!fecha":
+        elif comando == "fecha":
             return obtener_fecha_completa()
         
-        elif comando == "!multiplicar":
+        elif comando == "multiplicar":
             return ejecutar_multiplicacion(argumento)
 # --- CONFIGURACIÓN DE DISCORD ---
 
