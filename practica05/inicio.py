@@ -17,6 +17,11 @@ def mostrar_bienvenida():
 
 def historial_comandos ():
     historial_comandos = []
+    while True:
+        comando = input("Ingrese un comando (o 'salir' para terminar): ")
+        if comando.lower() == "salir":
+            break
+        historial_comandos.append(comando)
     return historial_comandos
 
 
