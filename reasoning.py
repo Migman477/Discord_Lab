@@ -1,20 +1,23 @@
 import re
-import herramientas
-import conocimiento
+import difflib
+from practica05 import herramientas as tools
+from practica05 import conocimiento as knowledge
 
 # --- CAPA DE DECISIÓN (El Agente) ---
 
 # 1. Catálogo de Herramientas (Toolkit)
 # El agente registra las funciones que puede usar.
 TOOL_CATALOG = {
-    "definir": herramientas.buscar_en_diccionario,
-    "validar": herramientas.validar_variable,
-    "sumar": herramientas.ejecutar_suma,
-    "multiplicar": herramientas.ejecutar_multiplicacion,
-    "hora": herramientas.obtener_hora,
-    "fecha": herramientas.obtener_fecha_completa,
-    "ayuda": herramientas.obtener_ayuda,
-    "bienvenida": herramientas.mostrar_bienvenida,
+    "definir": tools.buscar_en_diccionario,
+    "validar": tools.validar_variable,
+    "sumar": tools.ejecutar_suma,
+    "multiplicar": tools.ejecutar_multiplicacion,
+    "hora": tools.obtener_hora,
+    "fecha": tools.obtener_fecha_completa,
+    "ayuda": tools.obtener_ayuda,
+    "bienvenida": tools.mostrar_bienvenida,
+    "descripcion": tools.descripcion_comandos,
+    "listar": tools.listar,
 }
 
 # 2. Memoria de Estado
@@ -54,12 +57,17 @@ def run_reasoning_loop(user_id, user_input):
     argument = match.group(2).strip()
 
     # Manejo de comandos básicos sin argumentos
-    if not argument and tool_name in ["ayuda", "bienvenida", "hora", "fecha"]:
+    if not argument and tool_name in ["ayuda", "bienvenida", "hora", "fecha", "listar"]:
          tool_function = TOOL_CATALOG.get(tool_name)
          return tool_function()
 
     if tool_name not in TOOL_CATALOG:
-        return f"No reconozco la herramienta '{tool_name}'. Escribe '!ayuda' para ver la lista de herramientas disponibles."
+        # Sugerir el comando más cercano si no se encuentra
+        posibles_coincidencias = difflib.get_close_matches(tool_name, TOOL_CATALOG.keys(), n=1, cutoff=0.6)
+        sugerencia = ""
+        if posibles_coincidencias:
+            sugerencia = f" ¿Quisiste decir `!{posibles_coincidencias[0]}`?"
+        return f"No reconozco la herramienta '{tool_name}'.{sugerencia} Escribe `!ayuda` para ver la lista de herramientas disponibles."
 
     # --- PASO 2: ACCIÓN (Action) ---
     # El agente invoca la herramienta seleccionada.
@@ -72,7 +80,7 @@ def run_reasoning_loop(user_id, user_input):
     if observation.startswith("Error:"):
         print(f"Agente: [Usuario: {user_id}] -> Herramienta '{tool_name}' devolvió un error: {observation}")
         # Si hay un error, busca una sugerencia didáctica.
-        suggestion = conocimiento.obtener_sugerencia(observation)
+        suggestion = knowledge.obtener_sugerencia(observation.strip())
         
         # --- PASO 4: SALIDA (Output - Enriquecida) ---
         # El agente formula una respuesta final combinando el error y la sugerencia.
